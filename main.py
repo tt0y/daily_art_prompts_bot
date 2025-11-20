@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, types
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
@@ -20,7 +20,10 @@ async def send_daily_words(bot: Bot, storage: Storage, word_service: WordService
         return
 
     words = word_service.get_random_words(config.WORDS_COUNT)
-    message_text = f"🎲 Ваше случайное слово на сегодня:\n\n✨ <b>{words[0].upper()}</b> ✨"
+    
+    # Формируем список слов
+    words_list = "\n".join([f"✨ <b>{word.upper()}</b> ✨" for word in words])
+    message_text = f"🎲 Ваше случайное слово на сегодня:\n\n{words_list}"
 
     for chat_id in chats:
         try:
@@ -57,6 +60,14 @@ async def main():
     
     scheduler.start()
     logger.info(f"Бот запущен. Рассылка запланирована на {config.SCHEDULE_TIME}")
+
+    # Регистрация команд в меню
+    await bot.set_my_commands([
+        types.BotCommand(command="start", description="Начать работу"),
+        types.BotCommand(command="help", description="Справка"),
+        types.BotCommand(command="word", description="Случайное слово"),
+        types.BotCommand(command="about", description="О боте"),
+    ])
 
     # Запуск поллинга
     # Передаем storage в workflow_data, чтобы он был доступен в хендлерах
