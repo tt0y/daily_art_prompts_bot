@@ -27,3 +27,6 @@ class WordService:
             return self.words
             
         return random.sample(self.words, count)
+
+    def get_total_count(self) -> int:
+        return len(self.words)
