@@ -28,6 +28,14 @@ if ! docker compose version &> /dev/null; then
     fi
 fi
 
+# Остановка текущих контейнеров
+echo -e "${GREEN}Останавливаем текущие контейнеры...${NC}"
+docker compose down || true
+
+# Обновление кода
+echo -e "${GREEN}Забираем обновления из git...${NC}"
+git pull
+
 # Создание .env если нет
 if [ ! -f .env ]; then
     if [ -f .env.example ]; then
